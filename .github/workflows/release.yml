@@ -9,33 +9,36 @@ jobs:
   release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: read # No package write permission needed for npmjs.com
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Deno
-        uses: denoland/setup-deno@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          deno-version: '1.x'
+          node-version: '20' # Or your desired Node.js version
+          registry-url: 'https://registry.npmjs.org' # Set the registry URL for npm
 
-      - name: Read jsr.json
-        id: jsr
+      - name: Read package.json
+        id: package
         run: |
-          VERSION=$(deno eval 'import { readFileSync } from "node:fs"; const json = JSON.parse(readFileSync("jsr.json", { encoding: "utf8" })); console.log(json.version)')
+          VERSION=$(node -p "require('./package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
-      
+
       - name: Verify tag
         run: |
           TAG=${GITHUB_REF#refs/tags/}
-          if [ "$TAG" != "v${{ steps.jsr.outputs.version }}" ]; then
-            echo "Tag $TAG does not match jsr.json version v${{ steps.jsr.outputs.version }}"
+          if [ "$TAG" != "v${{ steps.package.outputs.version }}" ]; then
+            echo "Tag $TAG does not match package.json version v${{ steps.package.outputs.version }}"
             exit 1
           fi
+      
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Publish to JSR
-        run: deno publish
+      - name: Publish to npm
+        run: npm publish
         env:
-          DENO_AUTH_TOKENS: ${{ secrets.JSR_AUTH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # Use NODE_AUTH_TOKEN with actions/setup-node
