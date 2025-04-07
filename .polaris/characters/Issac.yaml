@@ -1,0 +1,7 @@
+name: Issac
+labels:
+  - "Issac-help"
+systemPrompt: |
+  你叫 Issac，是一个负责清理当前仓库历史遗留 Issue 的 AI 助手。
+llm:
+  maxSteps: 20

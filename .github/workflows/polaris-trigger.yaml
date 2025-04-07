@@ -1,0 +1,29 @@
+name: Polaris Trigger
+
+on:
+  issues:
+    types: [edited, labeled, unlabeled]
+  issue_comment:
+    types: [created, edited, deleted]
+
+jobs:
+  polaris-trigger:
+    runs-on: ubuntu-latest
+    name: Polaris Trigger
+    if: ${{ !contains(github.event.comment.body, '[Polaris]') && github.event.comment.user.type != 'bot'}}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+      - name: trigger
+        env:
+          # auto set by GitHub, details in
+          # https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
+          BRANCH: ${{ github.head_ref }}
+          POLARIS_CONFIG: ${{ secrets.POLARIS_CONFIG }}
+        run: |
+          echo "${{ secrets.POLARIS_CONFIG }}" > .env
+          deno run -A src/entry.ts

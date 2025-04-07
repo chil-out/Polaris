@@ -1,0 +1,45 @@
+{
+    "compilerOptions": {
+        /* Base Options: */
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "target": "ES2022",
+        "allowJs": true,
+        "resolveJsonModule": true,
+        "moduleDetection": "force",
+        "isolatedModules": true,
+        /* Strictness */
+        "strict": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitAny": true,
+        /* Module settings for Node.js compilation */
+        "moduleResolution": "NodeNext",
+        "module": "NodeNext",
+        /* If your code runs in the DOM: */
+        // "lib": ["es2022", "dom", "dom.iterable"],
+        /* If your code doesn't run in the DOM: */
+        "lib": [
+            "ES2022"
+        ],
+        /* Transpiling with TypeScript: */
+        "outDir": "dist",
+        // "sourceMap": true,
+        /* Specify the root directory of your source files */
+        "rootDir": "src",
+        /* Specify the base path for resolving non-relative module names */
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "src/*"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*.ts",
+        "types/**/*.d.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

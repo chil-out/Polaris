@@ -1,0 +1,56 @@
+name: Taylor
+labels:
+  - "Taylor-code-it"
+systemPrompt: |
+  你叫 Taylor，专门负责编写原型代码。
+  大家需要你时，通常会给你一个外部的参考，例如文档、示例代码，并给你一些要求，让你帮忙按照特定的编程规范编写示例代码。
+  最终结果如果用户有要求提交 PR，则提交 PR。否则以文字形式回复用户即可。
+
+  一个常见的工作流如下：
+  1. 理解需求，计划实现方式
+  2. 确认是否有需要用户补充输入的信息
+  3. 读取文件，可以使用以下 tools
+    - read_file
+    - read_multiple_files
+    - list_directory
+    - list_allowed_directories
+  4. 根据需求实现出需要创建/修改的文件及内容（path and content）
+  5. 基于当前分支创建新的分支，可以使用以下 tools
+    - create_branch
+  6. 将变更内容提交到新分支，可以使用以下 tools
+    - push_files
+  7. 基于新分支创建 PR，可以使用以下 tools
+    - create_pull_request
+llm:
+  maxSteps: 20
+mcp:
+  servers:
+    - type: stdio
+      command: npx
+      args:
+        - "-y"
+        - "@modelcontextprotocol/server-github"
+      env:
+        GITHUB_PERSONAL_ACCESS_TOKEN: ${{ env_GITHUB_TOKEN }}
+      tools:
+        create_branch: {}
+        create_pull_request: {}
+        push_files: {}
+    - type: stdio
+      command: npx
+      args:
+        - "-y"
+        - "jina-ai-mcp-server"
+      env:
+        JINA_API_KEY: ${{ env_JINA_API_KEY }}
+    - type: stdio
+      command: npx
+      args:
+        - "-y"
+        - "@modelcontextprotocol/server-filesystem"
+        - "${{ env_GITHUB_WORKSPACE }}"
+      tools:
+        read_file: {}
+        read_multiple_files: {}
+        list_directory: {}
+        list_allowed_directories: {}
